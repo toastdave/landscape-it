@@ -24,7 +24,7 @@ Create the technical and design foundation for a fast-moving SvelteKit monolith 
 - Lock workspace conventions, scripts, and package versions
 - Set up Biome, strict TypeScript checks, and baseline tests
 - Containerize Postgres, object storage, mail testing, Ollama, and the SSR app runtime
-- Reserve a dedicated port block starting at `1401`
+- Reserve a dedicated port block starting at `2201`
 - Add environment variables for auth, billing, storage, and AI pricing configuration
 - Seed starter credit packs and future pricing helpers
 - Build the initial SvelteKit shell with landing, studio, sign-in, billing, account, and docs routes
@@ -39,14 +39,16 @@ Create the technical and design foundation for a fast-moving SvelteKit monolith 
 ## Initial implementation status
 
 - Bun workspace, SvelteKit shell, Drizzle package, Docker Compose, and `mise` workflow are scaffolded
-- Dedicated local ports are reserved: `1401` through `1407`
-- PRD set now covers the future consumer landscaping roadmap
+- Dedicated local ports are reserved: `2201` through `2207`
+- The `2201` block was chosen after confirming `1401` already belonged to another sibling repo in the parent workspace
+- The studio, account, billing, docs, and media routes are all live in the app shell
+- A deterministic file-backed local workflow now lets the core consumer product flow work without waiting on auth or hosted AI credentials
 
 ## Remaining follow-up
 
 - Wire Better Auth fully into the app shell and account flows
-- Add storage helpers, image upload handling, and object delivery routes
-- Introduce AI provider configuration and generation orchestration once the first user flow is built
+- Replace the temporary file-backed workspace store with the intended database and object-storage-backed implementation
+- Introduce AI provider configuration and generation orchestration once the first working local product loop is stable enough to swap internals safely
 
 ## Non-goals
 

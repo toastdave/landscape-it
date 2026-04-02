@@ -9,8 +9,8 @@ RUN bun install --frozen-lockfile
 
 FROM deps AS development
 COPY . .
-EXPOSE 1401
-CMD ["bun", "run", "dev", "--", "--host", "0.0.0.0", "--port", "1401"]
+EXPOSE 2201
+CMD ["bun", "run", "dev", "--", "--host", "0.0.0.0", "--port", "2201"]
 
 FROM deps AS build
 COPY . .

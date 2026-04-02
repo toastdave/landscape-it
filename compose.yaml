@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - '1402:5432'
+      - '2202:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -24,8 +24,8 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
     ports:
-      - '1405:9000'
-      - '1406:9001'
+      - '2205:9000'
+      - '2206:9001'
     volumes:
       - minio-data:/data
 
@@ -45,14 +45,14 @@ services:
     image: axllent/mailpit:v1.29.4
     container_name: landscape-it-mailpit
     ports:
-      - '1403:1025'
-      - '1404:8025'
+      - '2203:1025'
+      - '2204:8025'
 
   ollama:
     image: ollama/ollama:latest
     container_name: landscape-it-ollama
     ports:
-      - '1407:11434'
+      - '2207:11434'
     volumes:
       - ollama-data:/root/.ollama
 
@@ -78,11 +78,11 @@ services:
       ollama:
         condition: service_started
     ports:
-      - '1401:1401'
+      - '2201:2201'
     volumes:
       - .:/app
       - /app/node_modules
-    command: bun run dev -- --host 0.0.0.0 --port 1401
+    command: bun run dev -- --host 0.0.0.0 --port 2201
 
 volumes:
   postgres-data:

@@ -39,6 +39,12 @@ Help users explore plausible landscaping directions quickly while keeping the ex
 - Saved concepts remain attached to the project and account
 - Regeneration is possible without forcing users to start over
 
+## Current implementation status
+
+- The app now generates deterministic concept passes immediately after upload and supports additional regenerate passes from the same project page
+- Each pass includes a practical brief, concept imagery, and recommendation cards so the full studio loop is working in local development
+- The current concept renderer uses generated SVGs as a dependable placeholder for future Gemini or Ollama-backed image generation
+
 ## Future follow-up
 
 - Localized edit instructions on a concept

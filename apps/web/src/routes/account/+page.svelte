@@ -3,7 +3,38 @@ import { Bookmark, CreditCard, Trees, UserRound } from '@lucide/svelte'
 
 const { data } = $props<{
 	data: {
-		account: typeof import('$lib/data/showcase').accountSnapshot
+		account: {
+			profile: {
+				name: string
+				email: string
+				creditBalance: number
+				projectCount: number
+				savedConceptCount: number
+				savedRecommendationCount: number
+			}
+			savedConcepts: Array<{
+				id: string
+				label: string
+				caption: string
+				project: string
+				assetUrl: string
+			}>
+			savedRecommendations: Array<{
+				id: string
+				title: string
+				project: string
+				category: string
+				priceLabel: string
+				reason: string
+			}>
+			activity: Array<{
+				id: string
+				label: string
+				detail: string
+				amountLabel: string
+				dateLabel: string
+			}>
+		}
 	}
 }>()
 </script>
@@ -16,9 +47,9 @@ const { data } = $props<{
 	<section class="rounded-[2rem] border border-black/6 bg-white px-5 py-6 shadow-[0_34px_90px_-64px_rgba(23,51,35,0.28)] sm:px-6 sm:py-7">
 		<div class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
 			<div>
-				<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Account scaffold</p>
-				<h1 class="mt-2 text-4xl tracking-[-0.05em] text-[#173323]">Saved concepts, recommendations, and credits all need one calm place to live.</h1>
-				<p class="mt-3 max-w-2xl text-sm leading-7 text-[#625d55]">This page is static for now, but it maps the future consumer account area where homeowners can revisit their favorite outdoor directions.</p>
+				<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Account</p>
+				<h1 class="mt-2 text-4xl tracking-[-0.05em] text-[#173323]">Saved concepts and recommendations now persist with the local workspace.</h1>
+				<p class="mt-3 max-w-2xl text-sm leading-7 text-[#625d55]">This page is still guest-first for local development, but it now reflects real saved items and credit activity from the working studio flow.</p>
 			</div>
 			<div class="rounded-[1.6rem] border border-black/8 bg-[#fbf7ef] px-5 py-5 text-center">
 				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#8b6c49]">Credits</p>
@@ -35,7 +66,7 @@ const { data } = $props<{
 					<UserRound class="text-[#c47b43]" size={18} />
 					<div>
 						<p class="text-sm font-semibold text-[#1e1b18]">Profile snapshot</p>
-						<p class="mt-1 text-xs text-[#7a756d]">The future signed-in area should stay simple and scan-friendly.</p>
+						<p class="mt-1 text-xs text-[#7a756d]">Ready for future Better Auth wiring without changing the overall page shape.</p>
 					</div>
 				</div>
 				<div class="mt-5 grid gap-3">
@@ -69,18 +100,19 @@ const { data } = $props<{
 					<CreditCard class="text-[#c47b43]" size={18} />
 					<div>
 						<p class="text-sm font-semibold text-[#1e1b18]">Recent activity</p>
-						<p class="mt-1 text-xs text-[#7a756d]">Ledger entries and complimentary access should be easy to parse.</p>
+						<p class="mt-1 text-xs text-[#7a756d]">Local ledger activity mirrors what billing history will eventually show with Polar.</p>
 					</div>
 				</div>
 				<div class="mt-5 grid gap-3">
-					{#each data.account.activity as entry (entry.label)}
+					{#each data.account.activity as entry (entry.id)}
 						<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">
 							<div class="flex items-start justify-between gap-3">
 								<div>
 									<p class="font-semibold text-[#173323]">{entry.label}</p>
-									<p class="mt-1 text-xs text-[#7a756d]">{entry.date}</p>
+									<p class="mt-1 text-sm text-[#7a756d]">{entry.detail}</p>
+									<p class="mt-1 text-xs text-[#7a756d]">{entry.dateLabel}</p>
 								</div>
-								<p class={`text-sm font-semibold ${entry.amount.startsWith('+') ? 'text-[#20834d]' : 'text-[#173323]'}`}>{entry.amount}</p>
+								<p class={`text-sm font-semibold ${entry.amountLabel.startsWith('+') ? 'text-[#20834d]' : 'text-[#173323]'}`}>{entry.amountLabel}</p>
 							</div>
 						</div>
 					{/each}
@@ -94,36 +126,55 @@ const { data } = $props<{
 					<Trees class="text-[#55725b]" size={18} />
 					<div>
 						<p class="text-sm font-semibold text-[#1e1b18]">Saved concepts</p>
-						<p class="mt-1 text-xs text-[#7a756d]">These become the homeowner's idea archive over time.</p>
+						<p class="mt-1 text-xs text-[#7a756d]">Saved directly from the working studio flow.</p>
 					</div>
 				</div>
-				<div class="mt-5 grid gap-4 sm:grid-cols-2">
-					{#each data.account.savedConcepts as concept (concept.label)}
-						<article class="overflow-hidden rounded-[1.6rem] border border-black/8 bg-[#fbf7ef]">
-							<div class="h-40 bg-linear-to-br from-[#e5c79d] via-[#98ab80] to-[#455f49]"></div>
-							<div class="p-4">
-								<p class="text-sm font-semibold text-[#173323]">{concept.label}</p>
-								<p class="mt-2 text-sm leading-7 text-[#5f5952]">{concept.caption}</p>
-								<p class="mt-3 text-xs uppercase tracking-[0.18em] text-[#8b6c49]">{concept.project}</p>
-							</div>
-						</article>
-					{/each}
-				</div>
+
+				{#if data.account.savedConcepts.length > 0}
+					<div class="mt-5 grid gap-4 sm:grid-cols-2">
+						{#each data.account.savedConcepts as concept (concept.id)}
+							<article class="overflow-hidden rounded-[1.6rem] border border-black/8 bg-[#fbf7ef]">
+								<img class="h-40 w-full object-cover" src={concept.assetUrl} alt={`${concept.project} ${concept.label}`} />
+								<div class="p-4">
+									<p class="text-sm font-semibold text-[#173323]">{concept.label}</p>
+									<p class="mt-2 text-sm leading-7 text-[#5f5952]">{concept.caption}</p>
+									<p class="mt-3 text-xs uppercase tracking-[0.18em] text-[#8b6c49]">{concept.project}</p>
+								</div>
+							</article>
+						{/each}
+					</div>
+				{:else}
+					<div class="mt-5 rounded-[1.4rem] border border-dashed border-black/10 bg-[#fbf7ef] p-4 text-sm leading-7 text-[#5f5952]">Save concept cards from the studio to build an idea archive here.</div>
+				{/if}
 			</div>
 
 			<div class="rounded-[2rem] border border-black/6 bg-white p-5 shadow-[0_34px_90px_-64px_rgba(23,51,35,0.28)] sm:p-6">
 				<div class="flex items-center gap-3">
 					<Bookmark class="text-[#c47b43]" size={18} />
 					<div>
-						<p class="text-sm font-semibold text-[#1e1b18]">What this page will evolve into</p>
-						<p class="mt-1 text-xs text-[#7a756d]">Future work is already captured in the PRDs.</p>
+						<p class="text-sm font-semibold text-[#1e1b18]">Saved recommendations</p>
+						<p class="mt-1 text-xs text-[#7a756d]">Useful for collecting likely plant, lighting, and hardscape moves.</p>
 					</div>
 				</div>
-				<div class="mt-5 grid gap-3 text-sm leading-7 text-[#5f5952]">
-					<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">Saved concept comparison and before/after organization by project.</div>
-					<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">Simple saved recommendation shelves for plant, hardscape, and lighting ideas.</div>
-					<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">Credit balance, billing history, and regeneration history without cluttering the studio.</div>
-				</div>
+
+				{#if data.account.savedRecommendations.length > 0}
+					<div class="mt-5 grid gap-3">
+						{#each data.account.savedRecommendations as recommendation (recommendation.id)}
+							<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">
+								<div class="flex items-start justify-between gap-3">
+									<div>
+										<p class="font-semibold text-[#173323]">{recommendation.title}</p>
+										<p class="mt-1 text-xs uppercase tracking-[0.18em] text-[#8b6c49]">{recommendation.category} - {recommendation.project}</p>
+									</div>
+									<span class="rounded-full bg-white px-3 py-1 text-sm font-semibold text-[#173323]">{recommendation.priceLabel}</span>
+								</div>
+								<p class="mt-3 text-sm leading-7 text-[#5f5952]">{recommendation.reason}</p>
+							</div>
+						{/each}
+					</div>
+				{:else}
+					<div class="mt-5 rounded-[1.4rem] border border-dashed border-black/10 bg-[#fbf7ef] p-4 text-sm leading-7 text-[#5f5952]">Save recommendations from the studio to keep a shortlist here.</div>
+				{/if}
 			</div>
 		</div>
 	</section>

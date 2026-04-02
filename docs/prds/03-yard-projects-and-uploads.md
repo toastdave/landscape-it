@@ -40,6 +40,12 @@ Make it easy for consumers to start with a real outdoor problem area and give th
 - The project page can show the original brief next to generated outputs later
 - Project setup works equally well for front-yard and backyard use cases
 
+## Current implementation status
+
+- The studio now supports one-photo project creation with title, project type, objective, budget, maintenance, sun exposure, style direction, climate context, and kid or pet toggles
+- Uploaded source photos are stored locally and served back through the app so the workflow is testable end to end without S3 credentials
+- The first concept pass is created immediately after project creation so the user sees value right away
+
 ## Future follow-up
 
 - Multiple source photos per project

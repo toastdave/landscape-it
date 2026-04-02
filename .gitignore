@@ -9,3 +9,4 @@ packages/db/drizzle/
 coverage/
 .mise.local.toml
 *.log
+.data/

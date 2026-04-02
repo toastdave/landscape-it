@@ -30,6 +30,12 @@ Make the app feel cumulative so homeowners can build confidence across multiple 
 - Saved ideas remain attached to the project that created them
 - Regeneration produces new concept variants without breaking the project timeline
 
+## Current implementation status
+
+- Project history, regeneration, saved concepts, and saved recommendations now persist inside the local guest workspace
+- The account page reads from the same workspace data as the studio so save states are already flowing across surfaces
+- This persistence is file-backed for now, which keeps the product loop dependable while the long-term database-backed implementation is still pending
+
 ## Future follow-up
 
 - Named collections or moodboards

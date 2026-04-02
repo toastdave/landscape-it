@@ -3,7 +3,30 @@ import { CircleDollarSign, CreditCard, History, ShieldCheck } from '@lucide/svel
 
 const { data } = $props<{
 	data: {
-		billing: typeof import('$lib/data/showcase').billingSnapshot
+		billing: {
+			creditBalance: number
+			creditPacks: Array<{
+				id: string
+				name: string
+				credits: number
+				priceLabel: string
+				detail: string
+				sandboxReady: boolean
+			}>
+			ledger: Array<{
+				id: string
+				label: string
+				detail: string
+				amountLabel: string
+				dateLabel: string
+			}>
+			pricing: {
+				analysisCredits: number
+				conceptCredits: number
+				targetMarginPercent: number
+				creditValueCents: number
+			}
+		}
 	}
 }>()
 </script>
@@ -16,14 +39,14 @@ const { data } = $props<{
 	<section class="rounded-[2rem] border border-black/6 bg-white px-5 py-6 shadow-[0_34px_90px_-64px_rgba(23,51,35,0.28)] sm:px-6 sm:py-7">
 		<div class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
 			<div>
-				<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Billing scaffold</p>
-				<h1 class="mt-2 text-4xl tracking-[-0.05em] text-[#173323]">Credits should feel plain-English, not mysterious.</h1>
-				<p class="mt-3 max-w-2xl text-sm leading-7 text-[#625d55]">The future checkout flow will mirror sibling apps: one-time Polar credit packs, clear cost math, and a visible ledger. This page gives that structure a home before wiring starts.</p>
+				<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Billing</p>
+				<h1 class="mt-2 text-4xl tracking-[-0.05em] text-[#173323]">The studio now spends and tops up local sandbox credits in a predictable way.</h1>
+				<p class="mt-3 max-w-2xl text-sm leading-7 text-[#625d55]">Checkout is still future work, but this page now reflects real workspace credit usage and the same pricing inputs that will later back Polar billing.</p>
 			</div>
 			<div class="rounded-[1.6rem] border border-black/8 bg-[#fbf7ef] px-5 py-5 text-center">
 				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#8b6c49]">Available now</p>
 				<p class="mt-3 text-4xl tracking-[-0.05em] text-[#173323]">{data.billing.creditBalance}</p>
-				<p class="mt-1 text-sm text-[#6c665f]">credits remaining</p>
+				<p class="mt-1 text-sm text-[#6c665f]">sandbox credits</p>
 			</div>
 		</div>
 	</section>
@@ -34,7 +57,7 @@ const { data } = $props<{
 				<CreditCard class="text-[#c47b43]" size={18} />
 				<div>
 					<p class="text-sm font-semibold text-[#1e1b18]">Credit packs</p>
-					<p class="mt-1 text-xs text-[#7a756d]">Three starter tiers match the future consumer framing.</p>
+					<p class="mt-1 text-xs text-[#7a756d]">The seeded packs already reflect live pricing helper math.</p>
 				</div>
 			</div>
 
@@ -45,7 +68,9 @@ const { data } = $props<{
 						<p class="mt-2 text-3xl tracking-[-0.05em] text-[#173323]">{pack.priceLabel}</p>
 						<p class="mt-1 text-sm text-[#6c665f]">{pack.credits} credits</p>
 						<p class="mt-4 text-sm leading-7 text-[#5f5952]">{pack.detail}</p>
-						<div class="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-semibold text-[#173323]">Polar wiring later</div>
+						<div class="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-semibold text-[#173323]">
+							{pack.sandboxReady ? 'Mapped for Polar sandbox' : 'Awaiting Polar mapping'}
+						</div>
 					</div>
 				{/each}
 			</div>
@@ -57,21 +82,21 @@ const { data } = $props<{
 					<CircleDollarSign class="text-[#c47b43]" size={18} />
 					<div>
 						<p class="text-sm font-semibold text-[#1e1b18]">Cost model</p>
-						<p class="mt-1 text-xs text-[#7a756d]">Show the cost logic before a generation starts.</p>
+						<p class="mt-1 text-xs text-[#7a756d]">The same pricing helper now powers the live studio flow.</p>
 					</div>
 				</div>
 				<div class="mt-5 grid gap-3">
 					<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4 text-sm text-[#2d2a25]">
 						<p class="font-semibold">Base yard analysis</p>
-						<p class="mt-2 text-[#655f57]">{data.billing.pricing.analysisCredits} credits for the planning brief and site interpretation.</p>
+						<p class="mt-2 text-[#655f57]">{data.billing.pricing.analysisCredits} credits for the planning brief and yard interpretation.</p>
 					</div>
 					<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4 text-sm text-[#2d2a25]">
 						<p class="font-semibold">Per concept image</p>
-						<p class="mt-2 text-[#655f57]">{data.billing.pricing.conceptCredits} credits per generated concept image.</p>
+						<p class="mt-2 text-[#655f57]">{data.billing.pricing.conceptCredits} credits per concept image after the base analysis step.</p>
 					</div>
 					<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4 text-sm text-[#2d2a25]">
 						<p class="font-semibold">Target margin</p>
-						<p class="mt-2 text-[#655f57]">Pricing currently assumes a {data.billing.pricing.targetMarginPercent}% target margin so the operator can tune costs over time.</p>
+						<p class="mt-2 text-[#655f57]">Pricing assumes a {data.billing.pricing.targetMarginPercent}% target margin and a {data.billing.pricing.creditValueCents}-cent credit value.</p>
 					</div>
 				</div>
 			</div>
@@ -81,7 +106,7 @@ const { data } = $props<{
 					<ShieldCheck class="text-[#f0c486]" size={18} />
 					<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#f0c486]">Sandbox status</p>
 				</div>
-				<p class="mt-4 text-sm leading-7 text-white/78">Polar is part of the scaffold, but checkout, webhook handling, and credit grants are still future work. The repo already reserves the env vars and route surface for that flow.</p>
+				<p class="mt-4 text-sm leading-7 text-white/78">Credit activity is now real within the local guest workflow. The remaining billing work is wiring checkout, webhooks, and true account entitlements on top of the same pricing model.</p>
 			</div>
 		</div>
 	</section>
@@ -91,20 +116,21 @@ const { data } = $props<{
 			<div class="flex items-center gap-3">
 				<History class="text-[#c47b43]" size={18} />
 				<div>
-					<p class="text-sm font-semibold text-[#1e1b18]">Ledger preview</p>
-					<p class="mt-1 text-xs text-[#7a756d]">The app should narrate purchases and usage in plain language.</p>
+					<p class="text-sm font-semibold text-[#1e1b18]">Ledger</p>
+					<p class="mt-1 text-xs text-[#7a756d]">Each generation and demo top-up now shows up here.</p>
 				</div>
 			</div>
 
 			<div class="mt-5 grid gap-3">
-				{#each data.billing.ledger as entry (entry.label)}
+				{#each data.billing.ledger as entry (entry.id)}
 					<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">
 						<div class="flex items-start justify-between gap-3">
 							<div>
 								<p class="font-semibold text-[#173323]">{entry.label}</p>
 								<p class="mt-1 text-sm text-[#6d665e]">{entry.detail}</p>
+								<p class="mt-1 text-xs text-[#7a756d]">{entry.dateLabel}</p>
 							</div>
-							<p class={`text-sm font-semibold ${entry.amount.startsWith('+') ? 'text-[#20834d]' : 'text-[#173323]'}`}>{entry.amount}</p>
+							<p class={`text-sm font-semibold ${entry.amountLabel.startsWith('+') ? 'text-[#20834d]' : 'text-[#173323]'}`}>{entry.amountLabel}</p>
 						</div>
 					</div>
 				{/each}
@@ -112,12 +138,12 @@ const { data } = $props<{
 		</div>
 
 		<div class="rounded-[2rem] border border-black/6 bg-white p-5 shadow-[0_34px_90px_-64px_rgba(23,51,35,0.28)] sm:p-6">
-			<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Launch checklist</p>
-			<h2 class="mt-2 text-3xl tracking-[-0.05em] text-[#173323]">Billing work to complete later</h2>
+			<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Billing follow-up</p>
+			<h2 class="mt-2 text-3xl tracking-[-0.05em] text-[#173323]">Still left to wire</h2>
 			<div class="mt-5 grid gap-3 text-sm leading-7 text-[#5f5952]">
-				<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">Map each credit pack to sandbox Polar products before enabling checkout.</div>
-				<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">Implement `/api/polar/webhooks` or the preferred billing route and replay orders safely.</div>
-				<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">Explain estimated credit cost before every generation request inside the studio.</div>
+				<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">Connect the seeded pack ids to sandbox Polar products and expose checkout handoff routes.</div>
+				<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">Translate demo ledger logic into webhook-backed purchase and grant logic for signed-in users.</div>
+				<div class="rounded-[1.4rem] border border-black/8 bg-[#fbf7ef] p-4">Swap guest-only sandbox credits for true account balances once Better Auth is fully wired.</div>
 			</div>
 		</div>
 	</section>

@@ -37,7 +37,7 @@ import { ArrowRight, CheckCircle2, Leaf, ShieldCheck, Upload } from '@lucide/sve
 				</div>
 				<div class="rounded-[1.5rem] border border-black/8 bg-white/80 p-4">
 					<p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8a6c45]">Local ports</p>
-					<p class="mt-2 text-sm font-medium text-[#1f3323]">1401-1407 with no sibling collision</p>
+					<p class="mt-2 text-sm font-medium text-[#1f3323]">2201-2207 with no sibling collision</p>
 				</div>
 			</div>
 		</div>

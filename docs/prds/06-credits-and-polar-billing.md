@@ -42,6 +42,12 @@ Charge for ongoing usage in a way that feels transparent, consumer-friendly, and
 - Pricing helpers can derive credits from configurable cost inputs
 - The app can later support checkout handoff and webhook-based credit grants without changing the core data model
 
+## Current implementation status
+
+- The studio now debits local sandbox credits for non-complimentary concept passes and surfaces the resulting ledger in billing and account views
+- Developers can top up demo credits from the studio so the generation loop stays easy to test
+- Polar environment variables and seeded credit packs remain in place, but checkout and webhook wiring are still future work
+
 ## Future follow-up
 
 - Promotional grants or referral credits

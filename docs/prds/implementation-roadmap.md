@@ -3,7 +3,7 @@
 ## Phase 1 - Foundation
 
 - Finalize the Bun workspace scaffold, app shell, database package, local infrastructure, and PRDs
-- Keep port allocation unique to this repo: `1401` through `1407`
+- Keep port allocation unique to this repo: `2201` through `2207`
 - Preserve consistency with sibling repos so contributors can move between projects easily
 
 ## Phase 2 - Auth, uploads, and project creation

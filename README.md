@@ -4,6 +4,13 @@ Landscape It is a consumer self-serve AI landscaping app. Homeowners upload a ph
 
 This repo is intentionally scaffolded in the same family as `upstage` and `tidy`: a Bun workspace with a SvelteKit web app, a shared Drizzle/Postgres database package, Docker-managed local infrastructure, and `mise` task runners.
 
+## Current implementation status
+
+- The consumer studio flow now works locally end to end without external AI credentials.
+- Guests can upload a yard photo, generate a landscaping brief, create concept passes, save concepts and recommendations, and revisit them in account and billing views.
+- The current generation path is deterministic and file-backed under `.data/` so the workflow stays reliable while auth, real storage backends, and hosted AI providers are still being wired.
+- This repo now uses the `2201` through `2207` project block because `1401` was already occupied by another sibling app in the parent workspace.
+
 ## Requirements
 
 - `mise`
@@ -44,8 +51,8 @@ cp .env.example .env
 2. Update `.env` for your machine:
 
 ```dotenv
-BETTER_AUTH_URL=https://<device>.<tailnet>.ts.net:1401
-BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:1401,https://<device>.<tailnet>.ts.net:1401
+BETTER_AUTH_URL=https://<device>.<tailnet>.ts.net:2201
+BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:2201,https://<device>.<tailnet>.ts.net:2201
 ```
 
 3. Install the toolchain and dependencies:
@@ -78,12 +85,14 @@ mise run seed
 mise run dev
 ```
 
+If you only want to exercise the current guest workflow, `mise run dev` is enough. The studio writes local workspace data and generated SVG concepts into `.data/`.
+
 App URLs:
 
-- Web app: `http://localhost:1401`
-- Mailpit: `http://localhost:1404`
-- MinIO console: `http://localhost:1406`
-- Ollama API: `http://localhost:1407`
+- Web app: `http://localhost:2201`
+- Mailpit: `http://localhost:2204`
+- MinIO console: `http://localhost:2206`
+- Ollama API: `http://localhost:2207`
 
 Stop:
 
@@ -110,7 +119,7 @@ mise run tailscale:up
 Open from another device:
 
 ```text
-https://<device>.<tailnet>.ts.net:1401
+https://<device>.<tailnet>.ts.net:2201
 ```
 
 ## AI setup
@@ -118,6 +127,7 @@ https://<device>.<tailnet>.ts.net:1401
 - Local development defaults to `AI_EXECUTION_MODE=local`, which routes analysis and generation through Ollama.
 - Hosted environments should use Gemini for higher fidelity analysis and image generation.
 - Pricing defaults are controlled with `LANDSCAPE_ANALYSIS_MODEL_COST_USD`, `LANDSCAPE_CONCEPT_MODEL_COST_USD`, `LANDSCAPE_TARGET_MARGIN_PERCENT`, and `LANDSCAPE_CREDIT_VALUE_CENTS`.
+- The currently implemented studio flow does not require live model calls yet; it uses deterministic local generation so product and UX work can move ahead reliably.
 
 ## Billing setup
 
