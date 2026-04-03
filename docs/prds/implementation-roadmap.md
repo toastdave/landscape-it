@@ -18,7 +18,7 @@
 - Guest-first limits and sign-in gating are now live in the app shell
 - Local email/password auth and guest-workspace migration are shipped
 - Account and billing routes are now protected behind sign-in
-- S3-backed media persistence is still outstanding; uploads remain local file-backed for now
+- S3-compatible media persistence is now available behind `LANDSCAPE_STORAGE_DRIVER=s3`, with the local filesystem still available as the default development fallback
 
 ## Phase 3 - Analysis and generation
 

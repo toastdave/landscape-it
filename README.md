@@ -10,6 +10,7 @@ This repo is intentionally scaffolded in the same family as `upstage` and `tidy`
 - Guests can upload a yard photo, generate a landscaping brief, create concept passes, save concepts and recommendations, and revisit them in account and billing views.
 - Better Auth is now wired for local email/password sign-in, and guest workspaces migrate into the signed-in account on the same device.
 - The current generation path is deterministic and file-backed under `.data/` so the workflow stays reliable while real storage backends, hosted AI providers, and checkout are still being wired.
+- Media storage can now run either against the local filesystem or an S3-compatible bucket such as MinIO via `LANDSCAPE_STORAGE_DRIVER=s3`.
 - This repo now uses the `2201` through `2207` project block because `1401` was already occupied by another sibling app in the parent workspace.
 
 ## Requirements
@@ -136,6 +137,12 @@ https://<device>.<tailnet>.ts.net:2201
 - `POLAR_WEBHOOK_SECRET` validates webhook deliveries.
 - `POLAR_SERVER` should stay on `sandbox` until checkout and webhook handling are verified end-to-end.
 - `POLAR_PRODUCT_STARTER`, `POLAR_PRODUCT_CURB_APPEAL`, and `POLAR_PRODUCT_BACKYARD_VISION` should point at the sandbox product IDs for each credit pack.
+
+## Storage setup
+
+- `LANDSCAPE_STORAGE_DRIVER=local` keeps uploads under `.data/`.
+- `LANDSCAPE_STORAGE_DRIVER=s3` switches uploads and generated media to the configured S3-compatible bucket.
+- Local Docker Compose already provisions MinIO on `http://localhost:2205` with the `landscape-it` bucket.
 
 ## Common commands
 

@@ -43,7 +43,7 @@ Make it easy for consumers to start with a real outdoor problem area and give th
 ## Current implementation status
 
 - The studio now supports one-photo project creation with title, project type, objective, budget, maintenance, sun exposure, style direction, climate context, and kid or pet toggles
-- Uploaded source photos are stored locally and served back through the app so the workflow is testable end to end without S3 credentials
+- Uploaded source photos can now be stored either locally or in an S3-compatible bucket, with the app continuing to serve them back through the same media route
 - The first concept pass is created immediately after project creation so the user sees value right away
 
 ## Future follow-up

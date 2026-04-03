@@ -21,7 +21,7 @@ Make homeowners feel safe uploading real photos of their property and paying for
 
 - The app now includes a dedicated privacy and trust page in the product shell
 - Studio copy explains the complimentary guest limit and account conversion path in plain language
-- Deleting workspace data removes the workspace record and its related local media files
+- Deleting workspace data removes the workspace record and its related media files from the active storage backend
 
 ## Requirements
 
