@@ -22,6 +22,17 @@ export type TrialStatus = {
 	signInRequired: boolean
 }
 
+export type ViewerPermissions = {
+	canCreateProject: boolean
+	canCreateGeneration: boolean
+	canSave: boolean
+	canViewAccount: boolean
+	canViewBilling: boolean
+	canUseDeveloperTopUp: boolean
+	signInRequiredForContinue: boolean
+	signInRequiredForSave: boolean
+}
+
 export type LandscapeConcept = {
 	id: string
 	label: string
@@ -112,6 +123,7 @@ export type LandscapeWorkspaceResponse = {
 		label: string
 		creditBalance: number
 		trial: TrialStatus
+		permissions: ViewerPermissions
 	}
 	pricing: {
 		analysisCredits: number

@@ -1,3 +1,5 @@
+import { enabledProviders } from '$lib/server/auth'
+
 export async function load({ locals }) {
 	return {
 		session: locals.user
@@ -12,7 +14,8 @@ export async function load({ locals }) {
 				}
 			: null,
 		auth: {
-			enabledProviders: [],
+			enabledProviders: enabledProviders,
+			emailPasswordEnabled: true,
 		},
 	}
 }

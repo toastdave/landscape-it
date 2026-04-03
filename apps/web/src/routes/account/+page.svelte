@@ -1,4 +1,5 @@
 <script lang="ts">
+import { authClient } from '$lib/auth-client'
 import { Bookmark, CreditCard, Trees, UserRound } from '@lucide/svelte'
 
 const { data } = $props<{
@@ -37,6 +38,16 @@ const { data } = $props<{
 		}
 	}
 }>()
+
+async function signOut() {
+	await authClient.signOut({
+		fetchOptions: {
+			onSuccess: () => {
+				window.location.href = '/'
+			},
+		},
+	})
+}
 </script>
 
 <svelte:head>
@@ -48,13 +59,16 @@ const { data } = $props<{
 		<div class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
 			<div>
 				<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Account</p>
-				<h1 class="mt-2 text-4xl tracking-[-0.05em] text-[#173323]">Saved concepts and recommendations now persist with the local workspace.</h1>
-				<p class="mt-3 max-w-2xl text-sm leading-7 text-[#625d55]">This page is still guest-first for local development, but it now reflects real saved items and credit activity from the working studio flow.</p>
+				<h1 class="mt-2 text-4xl tracking-[-0.05em] text-[#173323]">Your saved concepts, recommendations, and credit activity now live behind sign-in.</h1>
+				<p class="mt-3 max-w-2xl text-sm leading-7 text-[#625d55]">Guest workspaces move into this account after sign-in on the same device, so the first concept pass can still happen before authentication.</p>
 			</div>
-			<div class="rounded-[1.6rem] border border-black/8 bg-[#fbf7ef] px-5 py-5 text-center">
-				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#8b6c49]">Credits</p>
-				<p class="mt-3 text-4xl tracking-[-0.05em] text-[#173323]">{data.account.profile.creditBalance}</p>
-				<p class="mt-1 text-sm text-[#6c665f]">remaining</p>
+			<div class="grid gap-3">
+				<div class="rounded-[1.6rem] border border-black/8 bg-[#fbf7ef] px-5 py-5 text-center">
+					<p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#8b6c49]">Credits</p>
+					<p class="mt-3 text-4xl tracking-[-0.05em] text-[#173323]">{data.account.profile.creditBalance}</p>
+					<p class="mt-1 text-sm text-[#6c665f]">remaining</p>
+				</div>
+				<button class="rounded-full border border-black/8 bg-white px-4 py-2 text-sm font-semibold text-[#173323]" type="button" onclick={signOut}>Sign out</button>
 			</div>
 		</div>
 	</section>
@@ -66,7 +80,7 @@ const { data } = $props<{
 					<UserRound class="text-[#c47b43]" size={18} />
 					<div>
 						<p class="text-sm font-semibold text-[#1e1b18]">Profile snapshot</p>
-						<p class="mt-1 text-xs text-[#7a756d]">Ready for future Better Auth wiring without changing the overall page shape.</p>
+						<p class="mt-1 text-xs text-[#7a756d]">Powered by Better Auth and the same account shell planned in the PRDs.</p>
 					</div>
 				</div>
 				<div class="mt-5 grid gap-3">
@@ -100,7 +114,7 @@ const { data } = $props<{
 					<CreditCard class="text-[#c47b43]" size={18} />
 					<div>
 						<p class="text-sm font-semibold text-[#1e1b18]">Recent activity</p>
-						<p class="mt-1 text-xs text-[#7a756d]">Local ledger activity mirrors what billing history will eventually show with Polar.</p>
+						<p class="mt-1 text-xs text-[#7a756d]">Local ledger activity mirrors the same billing history shape planned for Polar-backed checkout.</p>
 					</div>
 				</div>
 				<div class="mt-5 grid gap-3">

@@ -40,8 +40,8 @@ const { data } = $props<{
 		<div class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
 			<div>
 				<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Billing</p>
-				<h1 class="mt-2 text-4xl tracking-[-0.05em] text-[#173323]">The studio now spends and tops up local sandbox credits in a predictable way.</h1>
-				<p class="mt-3 max-w-2xl text-sm leading-7 text-[#625d55]">Checkout is still future work, but this page now reflects real workspace credit usage and the same pricing inputs that will later back Polar billing.</p>
+				<h1 class="mt-2 text-4xl tracking-[-0.05em] text-[#173323]">Signed-in billing now reflects the same credit math the studio uses live.</h1>
+				<p class="mt-3 max-w-2xl text-sm leading-7 text-[#625d55]">Checkout is still the next integration step, but the pricing model, account balance, and ledger shape are now connected to authenticated usage instead of guest-only scaffolding.</p>
 			</div>
 			<div class="rounded-[1.6rem] border border-black/8 bg-[#fbf7ef] px-5 py-5 text-center">
 				<p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#8b6c49]">Available now</p>
@@ -106,7 +106,7 @@ const { data } = $props<{
 					<ShieldCheck class="text-[#f0c486]" size={18} />
 					<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#f0c486]">Sandbox status</p>
 				</div>
-				<p class="mt-4 text-sm leading-7 text-white/78">Credit activity is now real within the local guest workflow. The remaining billing work is wiring checkout, webhooks, and true account entitlements on top of the same pricing model.</p>
+				<p class="mt-4 text-sm leading-7 text-white/78">Credit activity is now real inside the signed-in local workflow. The remaining billing work is wiring checkout, webhooks, and true purchase grants on top of the same pricing model.</p>
 			</div>
 		</div>
 	</section>

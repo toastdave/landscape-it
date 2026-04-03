@@ -17,6 +17,7 @@ const { children, data } = $props<{
 		} | null
 		auth: {
 			enabledProviders: string[]
+			emailPasswordEnabled: boolean
 		}
 	}
 }>()
@@ -45,13 +46,14 @@ const { children, data } = $props<{
 					<a class="transition hover:text-[#173323]" href="/studio">Studio</a>
 					<a class="transition hover:text-[#173323]" href="/billing">Billing</a>
 					<a class="transition hover:text-[#173323]" href="/account">Account</a>
+					<a class="transition hover:text-[#173323]" href="/privacy">Privacy</a>
 					<a class="transition hover:text-[#173323]" href="/docs">Roadmap</a>
 				</nav>
 
 				<div class="flex items-center gap-2">
-					<a class="hidden items-center gap-2 rounded-full border border-black/8 bg-white px-4 py-2 text-sm font-medium text-[#173323] shadow-[0_10px_30px_-22px_rgba(23,51,35,0.35)] sm:flex" href="/sign-in">
+					<a class="hidden items-center gap-2 rounded-full border border-black/8 bg-white px-4 py-2 text-sm font-medium text-[#173323] shadow-[0_10px_30px_-22px_rgba(23,51,35,0.35)] sm:flex" href={data.session ? '/account' : '/sign-in'}>
 						<CircleUserRound size={16} />
-						{data.session ? data.session.user.name : data.auth.enabledProviders.length > 0 ? 'Sign in' : 'Auth setup'}
+						{data.session ? data.session.user.name : 'Sign in'}
 					</a>
 					<a class="flex items-center gap-2 rounded-full bg-[#c47b43] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_36px_-22px_rgba(196,123,67,0.8)] transition hover:bg-[#b06d3b]" href="/studio">
 						<span class="hidden sm:inline">{siteConfig.cta}</span>

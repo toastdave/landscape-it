@@ -2,6 +2,7 @@ import {
 	addDemoCredits,
 	createGeneration,
 	getLandscapeWorkspaceData,
+	getViewerWorkspacePermissions,
 	resetWorkspace,
 	toggleSavedConcept,
 	toggleSavedRecommendation,
@@ -58,6 +59,10 @@ function normalizeGenerationInput(formData: FormData): CreateGenerationInput {
 	}
 }
 
+function redirectToSignIn(reason: string) {
+	return redirect(303, `/sign-in?reason=${encodeURIComponent(reason)}&next=/studio`)
+}
+
 export async function load(event) {
 	const viewer = await getOrCreateViewerSession(event)
 
@@ -71,6 +76,12 @@ export async function load(event) {
 export const actions = {
 	createProject: async (event) => {
 		const viewer = await getOrCreateViewerSession(event)
+		const permissions = await getViewerWorkspacePermissions(viewer)
+
+		if (!permissions.canCreateProject) {
+			redirectToSignIn('continue')
+		}
+
 		const formData = await event.request.formData()
 		const file = formData.get('photo')
 
@@ -103,6 +114,12 @@ export const actions = {
 	},
 	regenerate: async (event) => {
 		const viewer = await getOrCreateViewerSession(event)
+		const permissions = await getViewerWorkspacePermissions(viewer)
+
+		if (!permissions.canCreateGeneration) {
+			redirectToSignIn('continue')
+		}
+
 		const formData = await event.request.formData()
 		const input = normalizeGenerationInput(formData)
 
@@ -129,6 +146,12 @@ export const actions = {
 	},
 	toggleSaveConcept: async (event) => {
 		const viewer = await getOrCreateViewerSession(event)
+		const permissions = await getViewerWorkspacePermissions(viewer)
+
+		if (!permissions.canSave) {
+			redirectToSignIn('save')
+		}
+
 		const formData = await event.request.formData()
 		const projectId = String(formData.get('projectId') ?? '')
 		const generationId = String(formData.get('generationId') ?? '')
@@ -139,6 +162,12 @@ export const actions = {
 	},
 	toggleSaveRecommendation: async (event) => {
 		const viewer = await getOrCreateViewerSession(event)
+		const permissions = await getViewerWorkspacePermissions(viewer)
+
+		if (!permissions.canSave) {
+			redirectToSignIn('save')
+		}
+
 		const formData = await event.request.formData()
 		const projectId = String(formData.get('projectId') ?? '')
 		const generationId = String(formData.get('generationId') ?? '')
@@ -149,6 +178,12 @@ export const actions = {
 	},
 	addDemoCredits: async (event) => {
 		const viewer = await getOrCreateViewerSession(event)
+		const permissions = await getViewerWorkspacePermissions(viewer)
+
+		if (!permissions.canUseDeveloperTopUp) {
+			redirectToSignIn('continue')
+		}
+
 		await addDemoCredits(viewer)
 		throw redirect(303, '/studio')
 	},

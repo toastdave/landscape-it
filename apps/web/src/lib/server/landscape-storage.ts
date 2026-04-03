@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 
 const dataRoot = new URL('../../../../../.data/', import.meta.url)
@@ -54,6 +54,14 @@ export async function storeUploadedPhoto(key: string, file: File) {
 export async function storeGeneratedSvg(key: string, svg: string) {
 	await ensureParentDirectory(key)
 	await writeFile(storagePathFromKey(key), svg, 'utf8')
+}
+
+export async function deleteStoredAsset(key: string) {
+	await rm(storagePathFromKey(key), { force: true })
+}
+
+export async function deleteStoredAssets(keys: string[]) {
+	await Promise.all(Array.from(new Set(keys)).map((key) => deleteStoredAsset(key)))
 }
 
 export async function readStoredAsset(key: string) {

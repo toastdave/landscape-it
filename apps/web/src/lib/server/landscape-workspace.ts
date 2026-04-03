@@ -10,6 +10,7 @@ import type {
 	LandscapeWorkspaceResponse,
 	ProjectType,
 	TrialStatus,
+	ViewerPermissions,
 	WorkspaceLedgerEntry,
 } from '$lib/types/landscape'
 import {
@@ -28,10 +29,12 @@ import {
 import {
 	buildMediaUrl,
 	createStorageKey,
+	deleteStoredAssets,
 	storeGeneratedSvg,
 	storeUploadedPhoto,
 } from './landscape-storage'
-import type { ViewerSession } from './viewer-session'
+import { isProduction } from './runtime'
+import { type ViewerSession, buildGuestViewerId } from './viewer-session'
 
 const INCLUDED_GUEST_GENERATIONS = 1
 const DEFAULT_SANDBOX_CREDITS = 36
@@ -191,6 +194,17 @@ async function readWorkspace(viewer: ViewerSession) {
 	}
 }
 
+async function readExistingWorkspace(viewer: ViewerSession) {
+	await ensureWorkspaceRoot()
+
+	try {
+		const raw = await readFile(workspaceFileUrl(viewer), 'utf8')
+		return JSON.parse(raw) as StoredWorkspace
+	} catch {
+		return null
+	}
+}
+
 async function writeWorkspace(viewer: ViewerSession, workspace: StoredWorkspace) {
 	workspace.updatedAt = new Date().toISOString()
 	await ensureWorkspaceRoot()
@@ -221,6 +235,56 @@ function createCreditPackCards(): CreditPackCard[] {
 					: 'Built for deeper backyard exploration and multi-zone concept work.',
 		sandboxReady: Boolean(pack.polarProductId),
 	}))
+}
+
+function buildViewerPermissions(
+	viewer: ViewerSession,
+	workspace: StoredWorkspace
+): ViewerPermissions {
+	const guestProjectLimitReached = viewer.kind === 'guest' && workspace.projects.length >= 1
+	const complimentaryRunUsed =
+		viewer.kind === 'guest' && workspace.usedComplimentaryGenerations >= INCLUDED_GUEST_GENERATIONS
+
+	if (viewer.kind === 'user') {
+		return {
+			canCreateProject: true,
+			canCreateGeneration: true,
+			canSave: true,
+			canViewAccount: true,
+			canViewBilling: true,
+			canUseDeveloperTopUp: !isProduction(),
+			signInRequiredForContinue: false,
+			signInRequiredForSave: false,
+		}
+	}
+
+	return {
+		canCreateProject: !guestProjectLimitReached && !complimentaryRunUsed,
+		canCreateGeneration: false,
+		canSave: false,
+		canViewAccount: false,
+		canViewBilling: false,
+		canUseDeveloperTopUp: false,
+		signInRequiredForContinue: guestProjectLimitReached || complimentaryRunUsed,
+		signInRequiredForSave: true,
+	}
+}
+
+function collectWorkspaceAssetKeys(workspace: StoredWorkspace) {
+	return workspace.projects.flatMap((project) => [
+		project.sourcePhoto.storageKey,
+		...project.generations.flatMap((generation) =>
+			generation.concepts.map((concept) => concept.assetKey)
+		),
+	])
+}
+
+function isInitialWorkspace(workspace: StoredWorkspace) {
+	return (
+		workspace.projects.length === 0 &&
+		workspace.ledger.length === 1 &&
+		workspace.ledger[0]?.id === INITIAL_GRANT_ID
+	)
 }
 
 function toLedgerResponse(entries: StoredLedgerEntry[]): WorkspaceLedgerEntry[] {
@@ -434,6 +498,7 @@ export async function getLandscapeWorkspaceData(
 ): Promise<LandscapeWorkspaceResponse> {
 	const workspace = await readWorkspace(viewer)
 	const pricing = getCreditPricingSummary()
+	const permissions = buildViewerPermissions(viewer, workspace)
 
 	return {
 		viewer: {
@@ -441,6 +506,7 @@ export async function getLandscapeWorkspaceData(
 			label: viewer.label,
 			creditBalance: workspace.creditBalance,
 			trial: getTrialStatus(workspace.usedComplimentaryGenerations),
+			permissions,
 		},
 		pricing: {
 			analysisCredits: pricing.analysisCredits,
@@ -452,6 +518,82 @@ export async function getLandscapeWorkspaceData(
 		ledger: toLedgerResponse(workspace.ledger),
 		projects: [...workspace.projects].reverse().map(toProjectResponse),
 	}
+}
+
+export async function getViewerWorkspacePermissions(viewer: ViewerSession) {
+	const workspace = await readWorkspace(viewer)
+	return buildViewerPermissions(viewer, workspace)
+}
+
+export async function migrateGuestWorkspaceToUser(input: {
+	guestId: string
+	userId: string
+}) {
+	const guestViewer: ViewerSession = {
+		kind: 'guest',
+		viewerId: buildGuestViewerId(input.guestId),
+		guestId: input.guestId,
+		label: 'Guest homeowner',
+	}
+	const userViewer: ViewerSession = {
+		kind: 'user',
+		viewerId: input.userId,
+		label: 'Signed-in homeowner',
+		email: '',
+		name: 'Signed-in homeowner',
+	}
+
+	const guestWorkspace = await readExistingWorkspace(guestViewer)
+
+	if (!guestWorkspace) {
+		return false
+	}
+
+	const existingUserWorkspace = await readWorkspace(userViewer)
+	const now = new Date().toISOString()
+
+	if (isInitialWorkspace(existingUserWorkspace)) {
+		await writeWorkspace(userViewer, {
+			...guestWorkspace,
+			viewerId: input.userId,
+			viewerKind: 'user',
+			updatedAt: now,
+		})
+		await rm(workspaceFileUrl(guestViewer), { force: true })
+		return true
+	}
+
+	const mergedProjects = [
+		...guestWorkspace.projects,
+		...existingUserWorkspace.projects.filter(
+			(project) => !guestWorkspace.projects.some((guestProject) => guestProject.id === project.id)
+		),
+	]
+	const mergedLedger = [
+		...guestWorkspace.ledger,
+		...existingUserWorkspace.ledger.filter(
+			(entry) =>
+				entry.id !== INITIAL_GRANT_ID &&
+				!guestWorkspace.ledger.some((guestEntry) => guestEntry.id === entry.id)
+		),
+	]
+
+	await writeWorkspace(userViewer, {
+		...existingUserWorkspace,
+		viewerId: input.userId,
+		viewerKind: 'user',
+		creditBalance: Math.max(existingUserWorkspace.creditBalance, guestWorkspace.creditBalance),
+		usedComplimentaryGenerations: Math.max(
+			existingUserWorkspace.usedComplimentaryGenerations,
+			guestWorkspace.usedComplimentaryGenerations
+		),
+		projects: mergedProjects,
+		ledger: mergedLedger,
+		updatedAt: now,
+	})
+
+	await rm(workspaceFileUrl(guestViewer), { force: true })
+	return true
 }
 
 export async function uploadAndCreateProject(
@@ -595,6 +737,12 @@ export async function addDemoCredits(viewer: ViewerSession) {
 }
 
 export async function resetWorkspace(viewer: ViewerSession) {
+	const existingWorkspace = await readExistingWorkspace(viewer)
+
+	if (existingWorkspace) {
+		await deleteStoredAssets(collectWorkspaceAssetKeys(existingWorkspace))
+	}
+
 	await ensureWorkspaceRoot()
 	await rm(workspaceFileUrl(viewer), { force: true })
 	return writeWorkspace(viewer, createInitialWorkspace(viewer))

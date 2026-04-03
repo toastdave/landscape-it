@@ -72,7 +72,7 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 				<div class="rounded-[1.6rem] border border-black/8 bg-[#fbf7ef] px-5 py-4 text-center">
 					<p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#8b6c49]">Viewer</p>
 					<p class="mt-2 text-2xl tracking-[-0.05em] text-[#173323]">{data.workspace.viewer.label}</p>
-					<p class="mt-1 text-sm text-[#6c665d]">{data.workspace.viewer.kind} workspace</p>
+					<p class="mt-1 text-sm text-[#6c665d]">{data.workspace.viewer.kind === 'user' ? 'account-backed workspace' : 'guest workspace'}</p>
 				</div>
 				<div class="rounded-[1.6rem] border border-black/8 bg-[#fbf7ef] px-5 py-4 text-center">
 					<p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#8b6c49]">Credits</p>
@@ -80,14 +80,16 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 					<p class="mt-1 text-sm text-[#6c665d]">sandbox credits left</p>
 				</div>
 				<div class="flex flex-wrap gap-3">
-					<form method="POST" action="?/addDemoCredits">
-						<button class="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-4 py-2 text-sm font-semibold text-[#173323]" type="submit">
-							<Wallet size={15} /> Add demo credits
-						</button>
-					</form>
+					{#if data.workspace.viewer.permissions.canUseDeveloperTopUp}
+						<form method="POST" action="?/addDemoCredits">
+							<button class="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-4 py-2 text-sm font-semibold text-[#173323]" type="submit">
+								<Wallet size={15} /> Developer top-up
+							</button>
+						</form>
+					{/if}
 					<form method="POST" action="?/resetWorkspace">
 						<button class="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-4 py-2 text-sm font-semibold text-[#173323]" type="submit">
-							<RefreshCcw size={15} /> Reset workspace
+							<RefreshCcw size={15} /> Delete workspace data
 						</button>
 					</form>
 				</div>
@@ -114,6 +116,19 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 				{form.error}
 			</div>
 		{/if}
+
+		{#if data.workspace.viewer.permissions.signInRequiredForContinue}
+			<div class="mt-5 rounded-[1.4rem] border border-[#173323]/10 bg-[#f4efe5] px-4 py-4 text-sm text-[#4f5048]">
+				<p class="font-semibold text-[#173323]">Guest mode stops after the first concept pass.</p>
+				<p class="mt-2 leading-7">Sign in to generate more concepts, keep billing history, and carry this workspace into your account without losing the yard you already uploaded.</p>
+				<div class="mt-4">
+					<a class="inline-flex items-center gap-2 rounded-full bg-[#173323] px-4 py-2 font-semibold text-white" href="/sign-in?reason=continue&next=/studio">
+						Continue with an account
+						<ArrowRight size={15} />
+					</a>
+				</div>
+			</div>
+		{/if}
 	</section>
 
 	<section class="grid gap-6 xl:grid-cols-[0.86fr_1.14fr]">
@@ -127,7 +142,8 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 					</div>
 				</div>
 
-				<form class="mt-5 grid gap-4" method="POST" action="?/createProject" enctype="multipart/form-data">
+				{#if data.workspace.viewer.permissions.canCreateProject}
+					<form class="mt-5 grid gap-4" method="POST" action="?/createProject" enctype="multipart/form-data">
 					<div class="grid gap-4 sm:grid-cols-2">
 						<label class="grid gap-2 text-sm font-medium text-[#173323]">
 							<span>Project title</span>
@@ -222,7 +238,22 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 						Generate first concepts
 						<ArrowRight size={16} />
 					</button>
-				</form>
+					</form>
+				{:else}
+					<div class="mt-5 rounded-[1.4rem] border border-dashed border-black/10 bg-[#fbf7ef] p-4 text-sm leading-7 text-[#5f5952]">
+						{#if data.workspace.viewer.kind === 'guest'}
+							You already used the complimentary guest project. Sign in to keep this yard, generate more passes, and start another project.
+						{:else}
+							Create a project once your account is ready.
+						{/if}
+						<div class="mt-4">
+							<a class="inline-flex items-center gap-2 rounded-full bg-[#173323] px-4 py-2 font-semibold text-white" href="/sign-in?reason=continue&next=/studio">
+								Sign in to continue
+								<ArrowRight size={15} />
+							</a>
+						</div>
+					</div>
+				{/if}
 			</section>
 
 			<section class="rounded-[2rem] border border-black/6 bg-white p-5 shadow-[0_34px_90px_-64px_rgba(23,51,35,0.28)] sm:p-6">
@@ -319,53 +350,65 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 									</div>
 								</div>
 
-								<form class="mt-4 grid gap-3" method="POST" action="?/regenerate">
-									<input name="projectId" type="hidden" value={selectedProject.id} />
-									<label class="grid gap-2 text-sm font-medium text-[#173323]">
-										<span>Prompt</span>
-										<textarea class="min-h-24 rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="prompt" required>{selectedGeneration.prompt}</textarea>
-									</label>
-									<div class="grid gap-3 sm:grid-cols-2">
+								{#if data.workspace.viewer.permissions.canCreateGeneration}
+									<form class="mt-4 grid gap-3" method="POST" action="?/regenerate">
+										<input name="projectId" type="hidden" value={selectedProject.id} />
 										<label class="grid gap-2 text-sm font-medium text-[#173323]">
-											<span>Budget</span>
-											<input class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="budgetLabel" value={selectedGeneration.budgetLabel} required />
+											<span>Prompt</span>
+											<textarea class="min-h-24 rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="prompt" required>{selectedGeneration.prompt}</textarea>
 										</label>
+										<div class="grid gap-3 sm:grid-cols-2">
+											<label class="grid gap-2 text-sm font-medium text-[#173323]">
+												<span>Budget</span>
+												<input class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="budgetLabel" value={selectedGeneration.budgetLabel} required />
+											</label>
+											<label class="grid gap-2 text-sm font-medium text-[#173323]">
+												<span>Budget mode</span>
+												<select class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="budgetMode">
+													<option value="shopping" selected={selectedGeneration.budgetMode === 'shopping'}>Shopping-ready</option>
+													<option value="planning_only" selected={selectedGeneration.budgetMode === 'planning_only'}>Planning only</option>
+												</select>
+											</label>
+										</div>
+										<div class="grid gap-3 sm:grid-cols-3">
+											<label class="grid gap-2 text-sm font-medium text-[#173323] sm:col-span-2">
+												<span>Style direction</span>
+												<input class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="styleDirection" value={selectedProject.styleDirection} required />
+											</label>
+											<label class="grid gap-2 text-sm font-medium text-[#173323]">
+												<span>Maintenance</span>
+												<select class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="maintenanceLevel">
+													<option value="low" selected={selectedProject.maintenanceLabel === 'Low maintenance'}>Low</option>
+													<option value="medium" selected={selectedProject.maintenanceLabel === 'Medium maintenance'}>Medium</option>
+													<option value="high" selected={selectedProject.maintenanceLabel === 'High maintenance'}>High</option>
+												</select>
+											</label>
+										</div>
 										<label class="grid gap-2 text-sm font-medium text-[#173323]">
-											<span>Budget mode</span>
-											<select class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="budgetMode">
-												<option value="shopping" selected={selectedGeneration.budgetMode === 'shopping'}>Shopping-ready</option>
-												<option value="planning_only" selected={selectedGeneration.budgetMode === 'planning_only'}>Planning only</option>
+											<span>Concept count</span>
+											<select class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="imageCount">
+												<option value="1" selected={selectedGeneration.imageCount === 1}>1</option>
+												<option value="2" selected={selectedGeneration.imageCount === 2}>2</option>
+												<option value="3" selected={selectedGeneration.imageCount === 3}>3</option>
+												<option value="4" selected={selectedGeneration.imageCount === 4}>4</option>
+												<option value="5" selected={selectedGeneration.imageCount === 5}>5</option>
 											</select>
 										</label>
+										<button class="inline-flex items-center justify-center gap-2 rounded-full bg-[#173323] px-5 py-3 text-sm font-semibold text-white" type="submit">
+											<ImagePlus size={16} /> Generate new pass
+										</button>
+									</form>
+								{:else}
+									<div class="mt-4 rounded-[1.2rem] border border-black/10 bg-white px-4 py-4 text-sm leading-7 text-[#5f5952]">
+										Sign in to regenerate this yard, compare new directions, and keep future passes with your account history.
+										<div class="mt-4">
+											<a class="inline-flex items-center gap-2 rounded-full bg-[#173323] px-4 py-2 font-semibold text-white" href="/sign-in?reason=continue&next=/studio">
+												Sign in to regenerate
+												<ArrowRight size={15} />
+											</a>
+										</div>
 									</div>
-									<div class="grid gap-3 sm:grid-cols-3">
-										<label class="grid gap-2 text-sm font-medium text-[#173323] sm:col-span-2">
-											<span>Style direction</span>
-											<input class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="styleDirection" value={selectedProject.styleDirection} required />
-										</label>
-										<label class="grid gap-2 text-sm font-medium text-[#173323]">
-											<span>Maintenance</span>
-											<select class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="maintenanceLevel">
-												<option value="low" selected={selectedProject.maintenanceLabel === 'Low maintenance'}>Low</option>
-												<option value="medium" selected={selectedProject.maintenanceLabel === 'Medium maintenance'}>Medium</option>
-												<option value="high" selected={selectedProject.maintenanceLabel === 'High maintenance'}>High</option>
-											</select>
-										</label>
-									</div>
-									<label class="grid gap-2 text-sm font-medium text-[#173323]">
-										<span>Concept count</span>
-										<select class="rounded-[1rem] border border-black/10 bg-white px-4 py-3" name="imageCount">
-											<option value="1" selected={selectedGeneration.imageCount === 1}>1</option>
-											<option value="2" selected={selectedGeneration.imageCount === 2}>2</option>
-											<option value="3" selected={selectedGeneration.imageCount === 3}>3</option>
-											<option value="4" selected={selectedGeneration.imageCount === 4}>4</option>
-											<option value="5" selected={selectedGeneration.imageCount === 5}>5</option>
-										</select>
-									</label>
-									<button class="inline-flex items-center justify-center gap-2 rounded-full bg-[#173323] px-5 py-3 text-sm font-semibold text-white" type="submit">
-										<ImagePlus size={16} /> Generate new pass
-									</button>
-								</form>
+								{/if}
 							</div>
 						</div>
 					</div>
@@ -377,7 +420,9 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 							<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Concept history</p>
 							<h2 class="mt-2 text-3xl tracking-[-0.05em] text-[#173323]">Choose a pass to compare directions</h2>
 						</div>
-						<a class="text-sm font-semibold text-[#c47b43]" href="/billing">Review credit model</a>
+						<a class="text-sm font-semibold text-[#c47b43]" href={data.workspace.viewer.permissions.canViewBilling ? '/billing' : '/sign-in?reason=billing&next=/billing'}>
+							Review credit model
+						</a>
 					</div>
 
 					<div class="mt-5 flex flex-wrap gap-3">
@@ -397,14 +442,20 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 								</div>
 								<div class="p-4">
 									<p class="text-sm leading-7 text-[#5f5952]">{concept.caption}</p>
-									<form class="mt-4" method="POST" action="?/toggleSaveConcept">
-										<input name="projectId" type="hidden" value={selectedProject.id} />
-										<input name="generationId" type="hidden" value={selectedGeneration.id} />
-										<input name="conceptId" type="hidden" value={concept.id} />
-										<button class={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${concept.isSaved ? 'border-[#c47b43]/30 bg-[#fff4ef] text-[#9e4f22]' : 'border-black/8 bg-white text-[#173323]'}`} type="submit">
-											<Leaf size={15} /> {concept.isSaved ? 'Saved to account' : 'Save concept'}
-										</button>
-									</form>
+									{#if data.workspace.viewer.permissions.canSave}
+										<form class="mt-4" method="POST" action="?/toggleSaveConcept">
+											<input name="projectId" type="hidden" value={selectedProject.id} />
+											<input name="generationId" type="hidden" value={selectedGeneration.id} />
+											<input name="conceptId" type="hidden" value={concept.id} />
+											<button class={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${concept.isSaved ? 'border-[#c47b43]/30 bg-[#fff4ef] text-[#9e4f22]' : 'border-black/8 bg-white text-[#173323]'}`} type="submit">
+												<Leaf size={15} /> {concept.isSaved ? 'Saved to account' : 'Save concept'}
+											</button>
+										</form>
+									{:else}
+										<a class="mt-4 inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-4 py-2 text-sm font-semibold text-[#173323]" href="/sign-in?reason=save&next=/studio">
+											<Leaf size={15} /> Sign in to save
+										</a>
+									{/if}
 								</div>
 							</article>
 						{/each}
@@ -467,14 +518,20 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 										<span class="rounded-full bg-white px-3 py-1 text-sm font-semibold text-[#173323]">{recommendation.priceLabel}</span>
 									</div>
 									<p class="mt-3 text-sm leading-7 text-[#5f5952]">{recommendation.reason}</p>
-									<form class="mt-4" method="POST" action="?/toggleSaveRecommendation">
-										<input name="projectId" type="hidden" value={selectedProject.id} />
-										<input name="generationId" type="hidden" value={selectedGeneration.id} />
-										<input name="recommendationId" type="hidden" value={recommendation.id} />
-										<button class={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${recommendation.isSaved ? 'border-[#c47b43]/30 bg-[#fff4ef] text-[#9e4f22]' : 'border-black/8 bg-white text-[#173323]'}`} type="submit">
-											<Wallet size={15} /> {recommendation.isSaved ? 'Saved to account' : 'Save recommendation'}
-										</button>
-									</form>
+									{#if data.workspace.viewer.permissions.canSave}
+										<form class="mt-4" method="POST" action="?/toggleSaveRecommendation">
+											<input name="projectId" type="hidden" value={selectedProject.id} />
+											<input name="generationId" type="hidden" value={selectedGeneration.id} />
+											<input name="recommendationId" type="hidden" value={recommendation.id} />
+											<button class={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${recommendation.isSaved ? 'border-[#c47b43]/30 bg-[#fff4ef] text-[#9e4f22]' : 'border-black/8 bg-white text-[#173323]'}`} type="submit">
+												<Wallet size={15} /> {recommendation.isSaved ? 'Saved to account' : 'Save recommendation'}
+											</button>
+										</form>
+									{:else}
+										<a class="mt-4 inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-4 py-2 text-sm font-semibold text-[#173323]" href="/sign-in?reason=save&next=/studio">
+											<Wallet size={15} /> Sign in to save
+										</a>
+									{/if}
 								</div>
 							{/each}
 						</div>
