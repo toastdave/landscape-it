@@ -17,6 +17,12 @@ Make homeowners feel safe uploading real photos of their property and paying for
 - Plain-language billing and refund expectations
 - Moderation hooks or safety review points for obviously problematic uploads or outputs
 
+## Current shipped checkpoint
+
+- The app now includes a dedicated privacy and trust page in the product shell
+- Studio copy explains the complimentary guest limit and account conversion path in plain language
+- Deleting workspace data removes the workspace record and its related local media files
+
 ## Requirements
 
 - Avoid overclaiming accuracy for climate, code, irrigation, or structural feasibility
@@ -31,6 +37,6 @@ Make homeowners feel safe uploading real photos of their property and paying for
 
 ## Future follow-up
 
-- User-managed asset deletion flows
+- User-managed account deletion beyond the current workspace reset flow
 - Safety review queue for flagged generations
 - More explicit privacy settings for saved project history

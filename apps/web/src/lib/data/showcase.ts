@@ -41,10 +41,10 @@ export const sampleConcepts = [
 ]
 
 export const futurePillars = [
-	'Guest-first upload flow with one complimentary concept before sign-in.',
-	'AI yard analysis that identifies sunlight assumptions, focal points, privacy opportunities, and maintenance tradeoffs.',
-	'Configurable concept generation with style, budget, maintenance, pet-friendliness, and climate-aware inputs.',
-	'Polar-backed credit packs for repeat usage once the first free experience proves value.',
+	'Account conversion is now live locally, with guest workspaces migrating into signed-in sessions on the same device.',
+	'Real AI yard analysis still needs to replace the current deterministic brief and concept engine.',
+	'S3-compatible media persistence is the next storage milestone after the current local file-backed flow.',
+	'Polar-backed credit packs remain the billing milestone once checkout and webhooks are wired.',
 ]
 
 export const prdIndex = [

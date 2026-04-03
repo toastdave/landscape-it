@@ -42,8 +42,12 @@ export const actions = {
 				},
 				headers: event.request.headers,
 			})
-			redirect(303, next)
+			throw redirect(303, next)
 		} catch (error) {
+			if (typeof error === 'object' && error !== null && 'status' in error && 'location' in error) {
+				throw error
+			}
+
 			return fail(400, {
 				mode: 'create-account',
 				error: error instanceof Error ? error.message : 'Unable to create the account.',
@@ -72,8 +76,12 @@ export const actions = {
 				},
 				headers: event.request.headers,
 			})
-			redirect(303, next)
+			throw redirect(303, next)
 		} catch (error) {
+			if (typeof error === 'object' && error !== null && 'status' in error && 'location' in error) {
+				throw error
+			}
+
 			return fail(400, {
 				mode: 'sign-in',
 				error: error instanceof Error ? error.message : 'Unable to sign in.',
@@ -84,6 +92,6 @@ export const actions = {
 		await auth.api.signOut({
 			headers: event.request.headers,
 		})
-		redirect(303, '/')
+		throw redirect(303, '/')
 	},
 }

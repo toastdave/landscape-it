@@ -24,7 +24,13 @@ const { data, form } = $props<{
 	}
 }>()
 
-const mode = $state<'create-account' | 'sign-in'>(form?.mode ?? 'create-account')
+let mode = $state<'create-account' | 'sign-in'>('create-account')
+
+$effect(() => {
+	if (form?.mode) {
+		mode = form.mode
+	}
+})
 
 const reasonCopy = $derived.by(() => {
 	switch (data.reason) {

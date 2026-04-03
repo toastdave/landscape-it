@@ -14,7 +14,7 @@ import { ArrowRight, CheckCircle2, Leaf, ShieldCheck, Upload } from '@lucide/sve
 		<div class="rounded-[2rem] border border-black/6 bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(246,239,226,0.92))] px-6 py-7 shadow-[0_36px_90px_-68px_rgba(23,51,35,0.45)] sm:px-8 sm:py-9">
 			<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#9c6a39]">Consumer landscaping studio</p>
 			<h1 class="mt-4 max-w-3xl text-5xl leading-none tracking-[-0.06em] text-[#173323] sm:text-6xl">Imagine a better yard before you spend a weekend or a dollar.</h1>
-			<p class="mt-5 max-w-2xl text-base leading-8 text-[#5a604f] sm:text-lg">Landscape It is being scaffolded as a self-serve product for homeowners who want clearer outdoor direction fast: upload a photo, set a goal, and get AI-generated landscaping concepts plus a practical brief.</p>
+			<p class="mt-5 max-w-2xl text-base leading-8 text-[#5a604f] sm:text-lg">Landscape It is now a working local-first studio for homeowners who want clearer outdoor direction fast: upload a photo, set a goal, and get landscaping concepts plus a practical brief before committing money or weekends.</p>
 
 			<div class="mt-7 flex flex-col gap-3 sm:flex-row">
 				<a class="inline-flex items-center justify-center gap-2 rounded-full bg-[#c47b43] px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_36px_-24px_rgba(196,123,67,0.8)] transition hover:bg-[#b06d3b]" href="/studio">
@@ -102,7 +102,7 @@ import { ArrowRight, CheckCircle2, Leaf, ShieldCheck, Upload } from '@lucide/sve
 	<section class="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
 		<div class="rounded-[2rem] border border-black/6 bg-[#173323] p-6 text-white shadow-[0_36px_90px_-64px_rgba(23,51,35,0.72)] sm:p-8">
 			<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#f0c486]">Future pillars</p>
-			<h2 class="mt-2 text-3xl tracking-[-0.05em]">What this scaffold is setting up next</h2>
+			<h2 class="mt-2 text-3xl tracking-[-0.05em]">What the current build is setting up next</h2>
 			<div class="mt-5 grid gap-3 text-sm leading-7 text-white/80">
 				{#each futurePillars as pillar (pillar)}
 					<div class="flex gap-3 rounded-[1.4rem] border border-white/10 bg-white/6 p-4">

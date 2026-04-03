@@ -8,9 +8,17 @@
 
 ## Phase 2 - Auth, uploads, and project creation
 
-- Wire Better Auth with Google and Apple
+- Ship Better Auth with local email/password first so the guest-to-account path works during development
+- Add Google when env credentials are available and keep Apple queued behind verified HTTPS/Tailscale setup
 - Add guest-first session handling and complimentary first-run limits
 - Implement yard project creation and photo upload to S3-compatible storage
+
+### Phase 2 status update
+
+- Guest-first limits and sign-in gating are now live in the app shell
+- Local email/password auth and guest-workspace migration are shipped
+- Account and billing routes are now protected behind sign-in
+- S3-backed media persistence is still outstanding; uploads remain local file-backed for now
 
 ## Phase 3 - Analysis and generation
 
