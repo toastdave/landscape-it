@@ -1,5 +1,6 @@
 <script lang="ts">
 import type {
+	LandscapeConcept,
 	LandscapeGeneration,
 	LandscapeProject,
 	LandscapeWorkspaceResponse,
@@ -21,6 +22,7 @@ const { data, form } = $props<{
 		workspace: LandscapeWorkspaceResponse
 		selectedProjectId: string | null
 		selectedGenerationId: string | null
+		selectedConceptId: string | null
 	}
 	form?: {
 		action?: string
@@ -51,6 +53,20 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 			(generation: LandscapeGeneration) => generation.id === selectedProject.activeGenerationId
 		) ??
 		selectedProject.generations[0] ??
+		null
+	)
+})
+
+const selectedConcept = $derived.by<LandscapeConcept | null>(() => {
+	if (!selectedGeneration) {
+		return null
+	}
+
+	return (
+		selectedGeneration.concepts.find(
+			(concept: LandscapeConcept) => concept.id === data.selectedConceptId
+		) ??
+		selectedGeneration.concepts[0] ??
 		null
 	)
 })
@@ -414,6 +430,40 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 					</div>
 				</section>
 
+				{#if selectedConcept}
+					<section class="rounded-[2rem] border border-black/6 bg-white p-5 shadow-[0_34px_90px_-64px_rgba(23,51,35,0.28)] sm:p-6">
+						<div class="flex flex-wrap items-center justify-between gap-3">
+							<div>
+								<p class="text-sm font-semibold uppercase tracking-[0.24em] text-[#8b6c49]">Compare context</p>
+								<h2 class="mt-2 text-3xl tracking-[-0.05em] text-[#173323]">Keep the original yard next to the selected concept</h2>
+							</div>
+							<div class="rounded-full border border-black/8 bg-[#fbf7ef] px-4 py-2 text-sm font-semibold text-[#173323]">
+								Comparing {selectedConcept.label}
+							</div>
+						</div>
+
+						<div class="mt-6 grid gap-4 lg:grid-cols-2">
+							<article class="overflow-hidden rounded-[1.6rem] border border-black/8 bg-[#fbf7ef]">
+								<div class="border-b border-black/8 px-4 py-3 text-sm font-semibold text-[#173323]">Original yard photo</div>
+								<img class="h-80 w-full object-cover" src={selectedProject.sourcePhoto.url} alt={selectedProject.sourcePhoto.alt} />
+							</article>
+							<article class="overflow-hidden rounded-[1.6rem] border border-black/8 bg-[#fbf7ef]">
+								<div class="border-b border-black/8 px-4 py-3 text-sm font-semibold text-[#173323]">{selectedConcept.label} in this pass</div>
+								<img class="h-80 w-full object-cover" src={selectedConcept.assetUrl} alt={`${selectedProject.title} ${selectedConcept.label}`} />
+								<div class="p-4 text-sm leading-7 text-[#5f5952]">{selectedConcept.caption}</div>
+							</article>
+						</div>
+
+						<div class="mt-5 flex flex-wrap gap-3">
+							{#each selectedGeneration.concepts as concept (concept.id)}
+								<a class={`rounded-full border px-4 py-2 text-sm font-semibold transition ${selectedConcept.id === concept.id ? 'border-[#c47b43]/30 bg-[#fff4ef] text-[#9e4f22]' : 'border-black/8 bg-[#fbf7ef] text-[#173323] hover:bg-white'}`} href={`/studio?project=${selectedProject.id}&generation=${selectedGeneration.id}&concept=${concept.id}`}>
+									Compare {concept.label}
+								</a>
+							{/each}
+						</div>
+					</section>
+				{/if}
+
 				<section class="rounded-[2rem] border border-black/6 bg-white p-5 shadow-[0_34px_90px_-64px_rgba(23,51,35,0.28)] sm:p-6">
 					<div class="flex flex-wrap items-center justify-between gap-3">
 						<div>
@@ -435,13 +485,16 @@ const selectedGeneration = $derived.by<LandscapeGeneration | null>(() => {
 
 					<div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 						{#each selectedGeneration.concepts as concept (concept.id)}
-							<article class="overflow-hidden rounded-[1.7rem] border border-black/8 bg-[#f8f2e8] shadow-[0_22px_50px_-40px_rgba(23,51,35,0.3)]">
+							<article class={`overflow-hidden rounded-[1.7rem] border bg-[#f8f2e8] shadow-[0_22px_50px_-40px_rgba(23,51,35,0.3)] ${selectedConcept?.id === concept.id ? 'border-[#c47b43]/30' : 'border-black/8'}`}>
 								<div class="relative">
 									<img class="h-72 w-full object-cover" src={concept.assetUrl} alt={`${selectedProject.title} ${concept.label}`} />
 									<div class="absolute left-4 top-4 rounded-full bg-white/92 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b6c49]">{concept.label}</div>
 								</div>
 								<div class="p-4">
 									<p class="text-sm leading-7 text-[#5f5952]">{concept.caption}</p>
+									<a class={`mt-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${selectedConcept?.id === concept.id ? 'border-[#c47b43]/30 bg-[#fff4ef] text-[#9e4f22]' : 'border-black/8 bg-white text-[#173323]'}`} href={`/studio?project=${selectedProject.id}&generation=${selectedGeneration.id}&concept=${concept.id}`}>
+										<ImagePlus size={15} /> {selectedConcept?.id === concept.id ? 'Comparing now' : 'Compare this option'}
+									</a>
 									{#if data.workspace.viewer.permissions.canSave}
 										<form class="mt-4" method="POST" action="?/toggleSaveConcept">
 											<input name="projectId" type="hidden" value={selectedProject.id} />

@@ -9,6 +9,7 @@ This repo is intentionally scaffolded in the same family as `upstage` and `tidy`
 - The consumer studio flow now works locally end to end without external AI credentials.
 - Guests can upload a yard photo, generate a landscaping brief, create concept passes, save concepts and recommendations, and revisit them in account and billing views.
 - Better Auth is now wired for local email/password sign-in, and guest workspaces migrate into the signed-in account on the same device.
+- The studio now includes a lightweight compare view so the original yard stays visible next to a selected concept option.
 - The current generation path is deterministic and file-backed under `.data/` so the workflow stays reliable while real storage backends, hosted AI providers, and checkout are still being wired.
 - Media storage can now run either against the local filesystem or an S3-compatible bucket such as MinIO via `LANDSCAPE_STORAGE_DRIVER=s3`.
 - This repo now uses the `2201` through `2207` project block because `1401` was already occupied by another sibling app in the parent workspace.

@@ -70,6 +70,7 @@ export async function load(event) {
 		workspace: await getLandscapeWorkspaceData(viewer),
 		selectedProjectId: event.url.searchParams.get('project'),
 		selectedGenerationId: event.url.searchParams.get('generation'),
+		selectedConceptId: event.url.searchParams.get('concept'),
 	}
 }
 

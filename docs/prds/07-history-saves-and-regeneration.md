@@ -32,8 +32,8 @@ Make the app feel cumulative so homeowners can build confidence across multiple 
 
 ## Current implementation status
 
-- Project history, regeneration, saved concepts, and saved recommendations now persist inside the local guest workspace
-- The account page reads from the same workspace data as the studio so save states are already flowing across surfaces
+- Project history, regeneration, saved concepts, and saved recommendations now persist inside the workspace model that powers both guest and signed-in flows
+- The account page reads from the same workspace data as the studio, and guest workspaces migrate into the signed-in account on the same device
 - This persistence is file-backed for now, which keeps the product loop dependable while the long-term database-backed implementation is still pending
 
 ## Future follow-up

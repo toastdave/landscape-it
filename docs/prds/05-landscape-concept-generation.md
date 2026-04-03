@@ -43,10 +43,11 @@ Help users explore plausible landscaping directions quickly while keeping the ex
 
 - The app now generates deterministic concept passes immediately after upload and supports additional regenerate passes from the same project page
 - Each pass includes a practical brief, concept imagery, and recommendation cards so the full studio loop is working in local development
+- The studio now offers a lightweight compare view that keeps the original yard photo next to the currently selected concept option
 - The current concept renderer uses generated SVGs as a dependable placeholder for future Gemini or Ollama-backed image generation
 
 ## Future follow-up
 
 - Localized edit instructions on a concept
 - Before and after slider views
-- Side-by-side comparison mode for top concepts
+- More advanced multi-select comparison for top concepts across different passes
